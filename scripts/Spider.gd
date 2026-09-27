@@ -46,6 +46,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	var parent := get_parent()
+	if parent != null and "world_frozen" in parent and bool(parent.world_frozen):
+		queue_redraw()
+		return
 	if is_bug:
 		var sway := sin(skitter_phase + Time.get_ticks_msec() * 0.001 * skitter_freq) * skitter_amp
 		position.x = clampf(position.x + sway * delta, 28.0, 1124.0)
