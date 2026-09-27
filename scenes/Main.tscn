@@ -1,77 +1,189 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
+[ext_resource type="Texture2D" path="res://assets/jumpscare_lady.png" id="2_lady"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_1"]
-font_color = Color(1, 1, 1, 1)
-font_size = 32
+[sub_resource type="LabelSettings" id="LabelSettings_HUD"]
+font_color = Color(0.956863, 0.901961, 0.788235, 1)
+font_size = 27
+outline_size = 4
+outline_color = Color(0.0470588, 0.0352941, 0.0627451, 1)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 
 [node name="Ceiling" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 0.0
+visible = false
 offset_right = 1152.0
 offset_bottom = 648.0
 color = Color(0.05, 0.05, 0.05, 1)
+mouse_filter = 2
 
-[node name="Beams" type="Node2D" parent="Ceiling"]
-
-[node name="Beam1" type="ColorRect" parent="Beams"]
+[node name="Beam1" type="ColorRect" parent="Ceiling"]
 offset_left = 200.0
-offset_top = 0.0
 offset_right = 300.0
 offset_bottom = 648.0
 color = Color(0.02, 0.02, 0.02, 1)
+mouse_filter = 2
 
-[node name="Beam2" type="ColorRect" parent="Beams"]
+[node name="Beam2" type="ColorRect" parent="Ceiling"]
 offset_left = 800.0
-offset_top = 0.0
 offset_right = 900.0
 offset_bottom = 648.0
 color = Color(0.02, 0.02, 0.02, 1)
+mouse_filter = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="ScoreLabel" type="Label" parent="CanvasLayer"]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 200.0
-offset_bottom = 60.0
-text = "Tokens: 0"
-label_settings = SubResource("LabelSettings_1")
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 300.0
+offset_bottom = 58.0
+text = "SCORE  00000"
+label_settings = SubResource("LabelSettings_HUD")
+mouse_filter = 2
+
+[node name="AmmoLabel" type="Label" parent="CanvasLayer"]
+offset_left = 368.0
+offset_top = 18.0
+offset_right = 784.0
+offset_bottom = 58.0
+text = "REVOLVER  6 / 6"
+horizontal_alignment = 1
+label_settings = SubResource("LabelSettings_HUD")
+mouse_filter = 2
 
 [node name="LivesLabel" type="Label" parent="CanvasLayer"]
-offset_left = 20.0
-offset_top = 60.0
-offset_right = 200.0
-offset_bottom = 100.0
-text = "Lives: 5"
-label_settings = SubResource("LabelSettings_1")
+offset_left = 820.0
+offset_top = 18.0
+offset_right = 1128.0
+offset_bottom = 58.0
+text = "HOUSE  10 / 10"
+horizontal_alignment = 2
+label_settings = SubResource("LabelSettings_HUD")
+mouse_filter = 2
+
+[node name="Instructions" type="Label" parent="CanvasLayer"]
+offset_left = 250.0
+offset_top = 66.0
+offset_right = 902.0
+offset_bottom = 96.0
+text = "HOLD FIRE  •  1-3 CHOOSE GUN  •  R RELOAD  •  U UPGRADE"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.82, 0.72, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+
+[node name="PhraseLabel" type="Label" parent="CanvasLayer"]
+visible = false
+offset_left = 276.0
+offset_top = 110.0
+offset_right = 876.0
+offset_bottom = 158.0
+text = "FIVE DOWN!  +25"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.78, 0.31, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.025, 0.06, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 30
+mouse_filter = 2
+pivot_offset = Vector2(300, 24)
+
+[node name="PartsLabel" type="Label" parent="CanvasLayer"]
+offset_left = 850.0
+offset_top = 534.0
+offset_right = 1128.0
+offset_bottom = 566.0
+text = "PARTS  00"
+horizontal_alignment = 2
+theme_override_colors/font_color = Color(0.54, 1, 0.68, 1)
+theme_override_font_sizes/font_size = 22
+mouse_filter = 2
+
+[node name="RevolverButton" type="Button" parent="CanvasLayer"]
+offset_left = 16.0
+offset_top = 579.0
+offset_right = 148.0
+offset_bottom = 633.0
+text = "▶ REVOLVER\nLV 0"
+theme_override_font_sizes/font_size = 15
+
+[node name="PistolButton" type="Button" parent="CanvasLayer"]
+offset_left = 156.0
+offset_top = 579.0
+offset_right = 288.0
+offset_bottom = 633.0
+text = "PISTOL\nLV 0"
+theme_override_font_sizes/font_size = 15
+
+[node name="ShotgunButton" type="Button" parent="CanvasLayer"]
+offset_left = 296.0
+offset_top = 579.0
+offset_right = 428.0
+offset_bottom = 633.0
+text = "SHOTGUN\nLV 0"
+theme_override_font_sizes/font_size = 15
+
+[node name="UpgradeButton" type="Button" parent="CanvasLayer"]
+offset_left = 838.0
+offset_top = 579.0
+offset_right = 1134.0
+offset_bottom = 633.0
+text = "UPGRADE REVOLVER · 4 PARTS\n+2 ROUNDS"
+theme_override_font_sizes/font_size = 15
 
 [node name="JumpScare" type="Control" parent="CanvasLayer"]
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 1152.0
 offset_bottom = 648.0
 visible = false
+mouse_filter = 0
 
-[node name="Background" type="ColorRect" parent="JumpScare"]
-offset_left = 0.0
-offset_top = 0.0
+[node name="Background" type="ColorRect" parent="CanvasLayer/JumpScare"]
 offset_right = 1152.0
 offset_bottom = 648.0
-color = Color(0, 0, 0, 1)
+color = Color(0.015, 0.008, 0.02, 1)
+mouse_filter = 2
 
-[node name="ScaryLady" type="TextureRect" parent="JumpScare"]
-offset_left = 256.0
-offset_top = 100.0
-offset_right = 896.0
-offset_bottom = 548.0
+[node name="Flash" type="ColorRect" parent="CanvasLayer/JumpScare"]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(1, 1, 1, 1)
+mouse_filter = 2
+
+[node name="ScaryLady" type="TextureRect" parent="CanvasLayer/JumpScare"]
+offset_left = 216.0
+offset_top = -24.0
+offset_right = 936.0
+offset_bottom = 696.0
+scale = Vector2(0.72, 0.72)
+texture = ExtResource("2_lady")
 expand_mode = 1
 stretch_mode = 5
-texture = null
+mouse_filter = 2
+
+[node name="GameOverLabel" type="Label" parent="CanvasLayer/JumpScare"]
+visible = false
+offset_left = 276.0
+offset_top = 22.0
+offset_right = 876.0
+offset_bottom = 78.0
+text = "THE HOUSE IS LOST"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.31, 0.36, 1)
+theme_override_colors/font_outline_color = Color(0.04, 0.015, 0.025, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 36
+mouse_filter = 2
+
+[node name="RestartButton" type="Button" parent="CanvasLayer/JumpScare"]
+visible = false
+offset_left = 430.0
+offset_top = 566.0
+offset_right = 722.0
+offset_bottom = 616.0
+text = "TRY AGAIN"
+theme_override_font_sizes/font_size = 23
 
 [node name="SquelchSound" type="AudioStreamPlayer" parent="."]
 
