@@ -45,14 +45,14 @@ mouse_filter = 2
 [node name="ScoreLabel" type="Label" parent="CanvasLayer"]
 offset_left = 24.0
 offset_top = 18.0
-offset_right = 300.0
+offset_right = 460.0
 offset_bottom = 58.0
-text = "SCORE  00000"
+text = "SCORE 00000  W01"
 label_settings = SubResource("LabelSettings_HUD")
 mouse_filter = 2
 
 [node name="AmmoLabel" type="Label" parent="CanvasLayer"]
-offset_left = 368.0
+offset_left = 460.0
 offset_top = 18.0
 offset_right = 784.0
 offset_bottom = 58.0
@@ -198,7 +198,7 @@ volume_db = -5.0
 
 [node name="ScreamSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("9_whisper")
-volume_db = -1.0
+volume_db = -14.0
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_music")
