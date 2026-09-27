@@ -1,0 +1,78 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_1"]
+font_color = Color(1, 1, 1, 1)
+font_size = 32
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Ceiling" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.05, 0.05, 0.05, 1)
+
+[node name="Beams" type="Node2D" parent="Ceiling"]
+
+[node name="Beam1" type="ColorRect" parent="Beams"]
+offset_left = 200.0
+offset_top = 0.0
+offset_right = 300.0
+offset_bottom = 648.0
+color = Color(0.02, 0.02, 0.02, 1)
+
+[node name="Beam2" type="ColorRect" parent="Beams"]
+offset_left = 800.0
+offset_top = 0.0
+offset_right = 900.0
+offset_bottom = 648.0
+color = Color(0.02, 0.02, 0.02, 1)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ScoreLabel" type="Label" parent="CanvasLayer"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 60.0
+text = "Tokens: 0"
+label_settings = SubResource("LabelSettings_1")
+
+[node name="LivesLabel" type="Label" parent="CanvasLayer"]
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 100.0
+text = "Lives: 5"
+label_settings = SubResource("LabelSettings_1")
+
+[node name="JumpScare" type="Control" parent="CanvasLayer"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 648.0
+visible = false
+
+[node name="Background" type="ColorRect" parent="JumpScare"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 1)
+
+[node name="ScaryLady" type="TextureRect" parent="JumpScare"]
+offset_left = 256.0
+offset_top = 100.0
+offset_right = 896.0
+offset_bottom = 548.0
+expand_mode = 1
+stretch_mode = 5
+texture = null
+
+[node name="SquelchSound" type="AudioStreamPlayer" parent="."]
+
+[node name="ScreamSound" type="AudioStreamPlayer" parent="."]
