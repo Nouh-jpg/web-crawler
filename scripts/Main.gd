@@ -18,6 +18,10 @@ const WEAPON_NAMES := ["REVOLVER", "PISTOL", "SHOTGUN"]
 const WEAPON_CAPACITIES := [6, 12, 2]
 const WEAPON_RELOADS := [1.05, 1.2, 1.5]
 const WEAPON_INTERVALS := [0.32, 0.19, 0.58]
+const WEAPON_RECOIL_DURATIONS := [0.2, 0.1, 0.32]
+const WEAPON_RECOIL_STRENGTHS := [23.0, 11.0, 43.0]
+const WEAPON_RECOIL_TWISTS := [0.075, 0.035, 0.18]
+const WEAPON_FLASH_DURATIONS := [0.09, 0.055, 0.15]
 const WEAPON_COST_BASE := 4
 const WEAPON_MAX_LEVEL := 3
 
@@ -65,6 +69,13 @@ var random_source := RandomNumberGenerator.new()
 @onready var flash_layer: ColorRect = $CanvasLayer/JumpScare/Flash
 @onready var game_over_label: Label = $CanvasLayer/JumpScare/GameOverLabel
 @onready var restart_button: Button = $CanvasLayer/JumpScare/RestartButton
+@onready var music_player: AudioStreamPlayer = $Music
+@onready var reload_sound: AudioStreamPlayer = $ReloadSound
+@onready var weapon_sounds: Array[AudioStreamPlayer] = [
+	$RevolverShot,
+	$PistolShot,
+	$ShotgunShot
+]
 
 
 func _ready() -> void:
@@ -72,6 +83,8 @@ func _ready() -> void:
 	jump_scare_layer.visible = false
 	phrase_label.visible = false
 	restart_button.pressed.connect(_restart_game)
+	music_player.finished.connect(_loop_music)
+	music_player.play()
 	for index in range(weapon_buttons.size()):
 		weapon_buttons[index].pressed.connect(_select_weapon.bind(index))
 	upgrade_button.pressed.connect(_upgrade_selected_weapon)
@@ -188,9 +201,11 @@ func fire_bullet() -> void:
 	ammo -= 1
 	weapon_ammo[selected_weapon] = ammo
 	fire_timer = _weapon_interval(selected_weapon)
-	recoil_timer = 0.12
-	muzzle_flash_timer = 0.065
-	_add_shell_casing()
+	recoil_timer = WEAPON_RECOIL_DURATIONS[selected_weapon]
+	muzzle_flash_timer = WEAPON_FLASH_DURATIONS[selected_weapon]
+	weapon_sounds[selected_weapon].play()
+	if selected_weapon != 0:
+		_add_shell_casing()
 	update_ui()
 	if ammo == 0:
 		_start_reload()
@@ -263,6 +278,7 @@ func _start_reload() -> void:
 		return
 	reload_timer = _weapon_reload_duration(selected_weapon)
 	weapon_reload_timers[selected_weapon] = reload_timer
+	reload_sound.play()
 	update_ui()
 
 
@@ -349,7 +365,10 @@ func _add_shell_casing() -> void:
 		"position": GUN_ORIGIN + side * 18.0,
 		"velocity": side * random_source.randf_range(100.0, 180.0) + Vector2(0.0, -random_source.randf_range(45.0, 110.0)),
 		"life": 0.7,
-		"rotation": random_source.randf_range(-0.7, 0.7)
+		"rotation": random_source.randf_range(-0.7, 0.7),
+		"half_width": 4.5 if selected_weapon == 2 else 3.0,
+		"half_length": 8.0 if selected_weapon == 2 else 6.0,
+		"color": Color("c8524e") if selected_weapon == 2 else Color("e3b75e")
 	})
 
 
@@ -409,6 +428,11 @@ func _restart_game() -> void:
 	get_tree().reload_current_scene()
 
 
+func _loop_music() -> void:
+	if not game_over:
+		music_player.play()
+
+
 func _draw() -> void:
 	draw_texture_rect(ROOM_BACKGROUND, Rect2(Vector2.ZERO, VIEW_SIZE), false)
 	_draw_bullets()
@@ -442,37 +466,56 @@ func _draw_shell_casings() -> void:
 	for casing in shell_casings:
 		var position: Vector2 = casing.position
 		var rotation: float = casing.rotation
+		var half_width: float = casing.half_width
+		var half_length: float = casing.half_length
 		var shape := PackedVector2Array([
-			position + Vector2(-3.0, -7.0).rotated(rotation),
-			position + Vector2(3.0, -7.0).rotated(rotation),
-			position + Vector2(3.0, 7.0).rotated(rotation),
-			position + Vector2(-3.0, 7.0).rotated(rotation)
+			position + Vector2(-half_width, -half_length).rotated(rotation),
+			position + Vector2(half_width, -half_length).rotated(rotation),
+			position + Vector2(half_width, half_length).rotated(rotation),
+			position + Vector2(-half_width, half_length).rotated(rotation)
 		])
-		draw_colored_polygon(shape, Color("e3b75e"))
+		draw_colored_polygon(shape, casing.color)
 
 
 func _draw_gun() -> void:
 	var direction := _aim_direction()
-	var base := GUN_ORIGIN - direction * recoil_timer * 58.0
 	var gun_height: float = [214.0, 200.0, 232.0][selected_weapon]
 	var gun_width := gun_height * 1024.0 / 1536.0
 	var art: Texture2D = GUN_ART[selected_weapon]
-	draw_set_transform(base, direction.angle() + PI * 0.5, Vector2.ONE)
+	var recoil_progress: float = clampf(recoil_timer / WEAPON_RECOIL_DURATIONS[selected_weapon], 0.0, 1.0)
+	var recoil_kick: float = WEAPON_RECOIL_STRENGTHS[selected_weapon] * pow(recoil_progress, 1.6)
+	var reload_duration: float = _weapon_reload_duration(selected_weapon)
+	var reload_progress: float = 1.0 - reload_timer / reload_duration if reload_timer > 0.0 else 0.0
+	var reload_motion: float = sin(clampf(reload_progress, 0.0, 1.0) * PI)
+	var reload_drops := [12.0, 7.0, 24.0]
+	var reload_turns := [0.2, 0.06, 0.48]
+	var reload_drop: float = reload_drops[selected_weapon] * reload_motion
+	var reload_turn: float = reload_turns[selected_weapon] * reload_motion
+	var recoil_turn: float = WEAPON_RECOIL_TWISTS[selected_weapon] * recoil_progress
+	var base: Vector2 = GUN_ORIGIN - direction * recoil_kick + Vector2(0.0, reload_drop)
+	draw_set_transform(base, direction.angle() + PI * 0.5 + reload_turn + recoil_turn, Vector2.ONE)
 	draw_texture_rect(art, Rect2(Vector2(-gun_width * 0.5, -gun_height), Vector2(gun_width, gun_height)), false)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	var muzzle_offset := gun_height * 0.98
-	_draw_muzzle_flash(base + direction * muzzle_offset, direction)
+	var side := Vector2(-direction.y, direction.x)
+	if selected_weapon == 2 and muzzle_flash_timer > 0.0:
+		_draw_muzzle_flash(base + direction * muzzle_offset + side * 5.0, direction)
+		_draw_muzzle_flash(base + direction * muzzle_offset - side * 5.0, direction)
+	else:
+		_draw_muzzle_flash(base + direction * muzzle_offset, direction)
 
 
 func _draw_muzzle_flash(tip: Vector2, direction: Vector2) -> void:
 	if muzzle_flash_timer <= 0.0:
 		return
-	for ray in range(8):
-		var flash_direction := direction.rotated(TAU * float(ray) / 8.0)
+	var ray_count: int = [7, 5, 11][selected_weapon]
+	var flash_scale: float = [0.9, 0.65, 1.5][selected_weapon]
+	for ray in range(ray_count):
+		var flash_direction := direction.rotated(TAU * float(ray) / float(ray_count))
 		var start := tip + flash_direction * 4.0
-		var finish := tip + flash_direction * (19.0 + float(ray % 3) * 5.0)
-		draw_line(start, finish, Color("ffe276"), 3.0, true)
-	draw_circle(tip, 6.0, Color("fff4bf"))
+		var finish := tip + flash_direction * (19.0 + float(ray % 3) * 5.0) * flash_scale
+		draw_line(start, finish, Color("ffe276"), 3.0 * flash_scale, true)
+	draw_circle(tip, 6.0 * flash_scale, Color("fff4bf"))
 
 
 func _draw_crosshair() -> void:

@@ -1,7 +1,14 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Texture2D" path="res://assets/jumpscare_lady.png" id="2_lady"]
+[ext_resource type="AudioStream" path="res://assets/audio/music_loop.ogg" id="3_music"]
+[ext_resource type="AudioStream" path="res://assets/audio/revolver_shot.wav" id="4_revolver"]
+[ext_resource type="AudioStream" path="res://assets/audio/pistol_shot.wav" id="5_pistol"]
+[ext_resource type="AudioStream" path="res://assets/audio/shotgun_blast.wav" id="6_shotgun"]
+[ext_resource type="AudioStream" path="res://assets/audio/weapon_reload.wav" id="7_reload"]
+[ext_resource type="AudioStream" path="res://assets/audio/spider_hit.wav" id="8_hit"]
+[ext_resource type="AudioStream" path="res://assets/audio/scare_whisper.wav" id="9_whisper"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_HUD"]
 font_color = Color(0.956863, 0.901961, 0.788235, 1)
@@ -186,5 +193,29 @@ text = "TRY AGAIN"
 theme_override_font_sizes/font_size = 23
 
 [node name="SquelchSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_hit")
+volume_db = -5.0
 
 [node name="ScreamSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("9_whisper")
+volume_db = -1.0
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_music")
+volume_db = -17.0
+
+[node name="RevolverShot" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_revolver")
+volume_db = -2.0
+
+[node name="PistolShot" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_pistol")
+volume_db = -4.0
+
+[node name="ShotgunShot" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_shotgun")
+volume_db = -1.0
+
+[node name="ReloadSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_reload")
+volume_db = -7.0
